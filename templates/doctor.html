@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="MedTrack AI — Doctor Dashboard. Review patient responses, risk levels, and prescribe medications.">
+    <title>Doctor Dashboard — MedTrack AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- ======================== HEADER ======================== -->
+    <header class="main-header">
+
+        <div class="logo">
+            <a href="/" class="active">🏥 MedTrack AI</a>
+        </div>
+
+        <!--<nav class="nav-links">
+            <a href="/">Home</a>
+            <a href="/admin">Admin Dashboard</a>
+            <a href="/doctor" class="active">Doctor Dashboard</a>
+        </nav>-->
+
+    </header>
+
+    <!-- ======================== DASHBOARD ======================== -->
+    <div class="dashboard-container">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>👨‍⚕️ Doctor Dashboard</h1>
+            <p>Monitor patient responses, risk levels, and prescribe medications</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <h3>Total Patients</h3>
+                <h1>{{ stats.total_patients }}</h1>
+            </div>
+
+            <div class="stat-card high">
+                <h3>High Risk</h3>
+                <h1>{{ stats.high_risk }}</h1>
+            </div>
+
+            <div class="stat-card mild">
+                <h3>Mild Concern</h3>
+                <h1>{{ stats.mild_risk }}</h1>
+            </div>
+
+            <div class="stat-card normal">
+                <h3>Normal</h3>
+                <h1>{{ stats.normal }}</h1>
+            </div>
+
+        </div>
+
+        <!-- Patient Responses -->
+        <h2 class="section-title">📋 Patient Responses</h2>
+
+        {% if responses %}
+
+        {% for response in responses %}
+
+        <div class="response-card">
+
+            <h3>{{ response[1] }}</h3>
+
+            <p>
+                <strong>Response:</strong>
+                {{ response[2] }}
+            </p>
+
+            <p>
+                <strong>Risk Level:</strong>
+                {% if response[3] == 'High Risk' %}
+                <span class="risk-badge high">🔴 {{ response[3] }}</span>
+                {% elif response[3] == 'Mild Concern' %}
+                <span class="risk-badge mild">🟡 {{ response[3] }}</span>
+                {% else %}
+                <span class="risk-badge normal">🟢 {{ response[3] }}</span>
+                {% endif %}
+            </p>
+
+            <p>
+                <strong>Recovery Score:</strong>
+                {{ response[4] }}/10
+            </p>
+
+            <p>
+                <strong>Medication:</strong>
+                {{ response[5] if response[5] else "Not Prescribed Yet" }}
+            </p>
+
+            <form action="/prescribe" method="POST">
+
+                <input type="hidden" name="response_id" value="{{ response[0] }}">
+
+                <input type="text" name="medication" placeholder="Enter medication to prescribe…" required>
+
+                <button type="submit" class="btn-primary">
+                    💊 Prescribe
+                </button>
+
+            </form>
+
+        </div>
+
+        {% endfor %}
+
+        {% else %}
+
+        <div class="empty-state">
+            <span class="empty-icon">📋</span>
+            <p>No patient responses yet. Send daily check-ins from the Admin Dashboard.</p>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>
